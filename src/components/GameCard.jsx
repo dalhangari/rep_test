@@ -22,13 +22,21 @@ export default function GameCard({ game, language }) {
   // 디자인 대체 기호 추출을 위한 헬퍼 변수
   const symbol = game.title.en.split(' ').map(w => w[0]).join('').slice(0, 3);
 
+  // 배포 시 서브디렉토리(/rep_test) 경로가 꼬여 썸네일 이미지가 깨지는 현상을 방지하는 동적 경로 계산기
+  const isAbsolute = game.thumbnail && (game.thumbnail.startsWith('http') || game.thumbnail.startsWith('data:'));
+  const thumbnailUrl = isAbsolute
+    ? game.thumbnail
+    : game.thumbnail
+      ? `${import.meta.env.BASE_URL.replace(/\/$/, '')}${game.thumbnail}`
+      : null;
+
   return (
     <Link to={`/game/${game.id}`} className="game-card" style={cardStyle}>
       <div className="card-thumbnail-wrapper">
-        {game.thumbnail ? (
+        {thumbnailUrl ? (
           <img 
             className="card-thumbnail-img" 
-            src={game.thumbnail} 
+            src={thumbnailUrl} 
             alt={game.title[language]} 
             loading="lazy"
           />
